@@ -256,6 +256,3 @@ st.sidebar.write("진행된 매치 수:", len(st.session_state.history))
 if st.sidebar.button("히스토리 보기"):
     st.sidebar.json(st.session_state.history)
 
-# 하단 도움말 및 저작권 안내
-st.markdown("---")
-st.markdown("이미지는 한국 위키백과(ko.wikipedia.org)에서 가능한 경우 자동으로 가져옵니다. 위키미디어에 있는 이미지는 각각 다른 라이선스(저작권)가 적용될 수 있으니, 상업적 사용이나 재배포가 필요하면 원 출처의 라이선스를 확인하세요.") 앱을 재시작하세요.")
