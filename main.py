@@ -1,59 +1,95 @@
-# app.py (간단 골격)
+# app.py
 import streamlit as st
-from streamlit_drawable_canvas import st_canvas
-from PIL import Image
-import io, json, base64
 from datetime import datetime
+import json
+import io
+
+# PIL은 이미지를 미리보기로 생성할 때 사용
+from PIL import Image, ImageDraw, ImageFont
 
 st.set_page_config(page_title="꿈꾸는 공원 만들기", layout="wide")
 
-# 사이드바: 프로젝트 기본
-st.sidebar.title("프로젝트")
-title = st.sidebar.text_input("프로젝트 이름", "내 공원")
-author = st.sidebar.text_input("닉네임", "dlwldms00")
+# 닉네임 기본값: dlwldms00 (요청에 따라 자동 채움)
+DEFAULT_NICK = "dlwldms00"
+
+# st_canvas import 시도
+HAS_CANVAS = False
+try:
+    from streamlit_drawable_canvas import st_canvas
+    HAS_CANVAS = True
+except Exception as e:
+    # import 실패시 HAS_CANVAS=False로 처리
+    st.sidebar.warning("streamlit-drawable-canvas를 찾을 수 없습니다. 설치하면 캔버스 모드 사용 가능해요.")
+    st.sidebar.caption("설치: python -m pip install streamlit-drawable-canvas")
+
+# 세션 상태 초기화
 if "objects" not in st.session_state:
     st.session_state.objects = []
 
-# 툴(색상, 브러시)
-st.sidebar.markdown("## 요소 추가")
-element_type = st.sidebar.selectbox("추가할 요소", ["나무(도형)", "벤치(사각)", "텍스트"])
+st.sidebar.title("프로젝트 설정")
+title = st.sidebar.text_input("프로젝트 이름", "내 공원")
+author = st.sidebar.text_input("닉네임", DEFAULT_NICK)
+
+st.sidebar.markdown("### 요소 추가")
+el_type = st.sidebar.selectbox("요소 종류", ["나무", "벤치", "분수", "텍스트"])
 color = st.sidebar.color_picker("색상", "#228B22")
 size = st.sidebar.slider("크기", 10, 200, 60)
+x = st.sidebar.slider("X 좌표 (픽셀)", 0, 900, 100)
+y = st.sidebar.slider("Y 좌표 (픽셀)", 0, 600, 100)
+rotation = st.sidebar.slider("회전(도)", 0, 360, 0)
+text_value = st.sidebar.text_input("텍스트 내용(선택)", "안녕 공원")
 
-# 캔버스: 기본 드로잉(유저는 캔버스에 직접 그리거나 요소 추가)
-canvas_result = st_canvas(
-    fill_color="rgba(255, 165, 0, 0.3)",
-    stroke_width=2,
-    background_color="#eef2f3",
-    height=600,
-    width=900,
-    drawing_mode="rectangle", # 또는 "polygon","freedraw"
-    key="canvas",
-)
-
-# 간단한 '요소 추가' 버튼: 요소 리스트에 저장 (좌표 자동은 미구현, 예시용)
 if st.sidebar.button("요소 추가"):
-    st.session_state.objects.append({
-        "id": len(st.session_state.objects)+1,
-        "type": element_type,
+    obj = {
+        "id": len(st.session_state.objects) + 1,
+        "type": el_type,
         "color": color,
         "size": size,
-        "x": 100, "y": 100, "rotation": 0, "layer": len(st.session_state.objects)
-    })
+        "x": x,
+        "y": y,
+        "rotation": rotation,
+        "text": text_value
+    }
+    st.session_state.objects.append(obj)
+    st.sidebar.success(f"{el_type} 요소 추가됨!")
 
-# 오른쪽: 객체 리스트와 내보내기
-st.sidebar.markdown("## 저장/내보내기")
+st.sidebar.markdown("### 저장 / 내보내기")
+proj = {
+    "title": title,
+    "author": author,
+    "created": str(datetime.now()),
+    "objects": st.session_state.objects
+}
 if st.sidebar.button("프로젝트 JSON 다운로드"):
-    proj = {"title": title, "author": author, "created": str(datetime.now()), "objects": st.session_state.objects}
-    st.sidebar.download_button("다운로드(JSON)", data=json.dumps(proj, ensure_ascii=False).encode("utf-8"), file_name=f"{title}.json", mime="application/json")
+    st.sidebar.download_button("다운로드(JSON)", data=json.dumps(proj, ensure_ascii=False).encode("utf-8"),
+                                file_name=f"{title}.json", mime="application/json")
 
-# 메인: 작업 영역과 객체 목록
-col1, col2 = st.columns([3,1])
-with col1:
-    st.header(title)
-    st.write("캔버스(작업 영역)")
-    st.image(canvas_result.image_data) if canvas_result.image_data is not None else st.write("캔버스에 그려보세요!")
-with col2:
-    st.write("요소 목록")
-    for obj in st.session_state.objects:
-        st.write(obj)
+# PNG 생성 함수 (간단 렌더링)
+def render_preview(objects, w=900, h=600, bg=(238,242,243)):
+    img = Image.new("RGB", (w, h), color=bg)
+    draw = ImageDraw.Draw(img)
+    # 기본 폰트
+    try:
+        font = ImageFont.truetype("DejaVuSans.ttf", 14)
+    except:
+        font = ImageFont.load_default()
+    for o in objects:
+        cx = int(o.get("x", 100))
+        cy = int(o.get("y", 100))
+        s = int(o.get("size", 60))
+        c = o.get("color", "#228B22")
+        t = o.get("type", "나무")
+        if t == "나무":
+            # 원으로 나무 표현
+            r = s // 2
+            draw.ellipse((cx-r, cy-r, cx+r, cy+r), fill=c, outline="black")
+        elif t == "벤치":
+            # 사각형으로 벤치
+            w_rect = s
+            h_rect = max(10, s//3)
+            draw.rectangle((cx, cy, cx + w_rect, cy + h_rect), fill=c, outline="black")
+        elif t == "분수":
+            # 작은 원 3개 쌓기
+            for i in range(3):
+                r = max(6, s//6) + i*4
+                draw.ellipse((cx-r, cy-i*8-r, 
