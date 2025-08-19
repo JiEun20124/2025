@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import calendar
 from datetime import datetime
+df = pd.read_csv("전국문화축제표준데이터.csv", encoding="cp949")
 
 # 데이터 불러오기
 def load_data():
