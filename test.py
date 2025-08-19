@@ -29,15 +29,15 @@ festivals = df[df["축제시작일자"].dt.month == month]
 cal = calendar.Calendar()
 days = cal.itermonthdates(2025, month)
 
-# CSS로 균일한 칸 간격 맞추기
+# CSS 스타일 (중괄호는 {{ }} 로 이스케이프 처리)
 calendar_table = """
 <style>
-.calendar-table {
+.calendar-table {{
     border-collapse: collapse;
     width: 100%;
     table-layout: fixed;
-}
-.calendar-table th, .calendar-table td {
+}}
+.calendar-table th, .calendar-table td {{
     border: 1px solid #999;
     text-align: center;
     vertical-align: top;
@@ -45,10 +45,10 @@ calendar_table = """
     height: 100px;
     padding: 5px;
     font-size: 14px;
-}
-.calendar-table th {
+}}
+.calendar-table th {{
     background-color: #f0f0f0;
-}
+}}
 </style>
 <table class='calendar-table'>
 <tr>{}</tr>
