@@ -27,8 +27,8 @@ df = load_data()
 # -------------------------
 def get_background_image(month: int) -> str:
     season_images = {
-        "winter": "https://images.unsplash.com/photo-1605832950097-9e32581e19c4?auto=format&fit=crop&w=1200&q=80",  # 겨울 설경
-        "spring": "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1200&q=80",  # 봄 꽃
+        "winter": "https://images.unsplash.com/photo-1608889175123-7b2c1f6a5c51?auto=format&fit=crop&w=1200&q=80",  # 겨울 설경
+        "spring": "https://images.unsplash.com/photo-1495748196005-68f0b3e5a4d4?auto=format&fit=crop&w=1200&q=80",  # 봄 벚꽃
         "summer": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",  # 여름 바다
         "autumn": "https://images.unsplash.com/photo-1501973801540-537f08ccae7b?auto=format&fit=crop&w=1200&q=80",  # 가을 단풍
     }
@@ -41,14 +41,33 @@ def get_background_image(month: int) -> str:
         return season_images["summer"]
     else:
         return season_images["autumn"]
+
 month = st.sidebar.selectbox("월 선택", range(1, 13), index=datetime.now().month - 1)
 
+# 배경 이미지 적용
 bg_url = get_background_image(month)
 page_bg = f"""
 <style>
 .stApp {{
   background: url("{bg_url}") no-repeat center center fixed;
   background-size: cover;
+}}
+/* 캘린더 표 스타일 */
+.calendar-table {{
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+  background-color: rgba(255,255,255,0.8); /* 배경 반투명 */
+}}
+.calendar-table th, .calendar-table td {{
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+  vertical-align: top;
+  width: 14.28%; /* 요일별 균등 분배 */
+}}
+.calendar-table th {{
+  background-color: rgba(200,200,200,0.7);
 }}
 </style>
 """
@@ -71,7 +90,7 @@ days = cal.itermonthdates(2025, month)
 st.subheader(f"📅 2025년 {month}월 축제 일정")
 
 calendar_table = """
-<table border='1' style='border-collapse: collapse; text-align:center; table-layout: fixed; width:100%;'>
+<table class='calendar-table'>
 <tr>{}</tr>
 """.format("".join([f"<th>{day}</th>" for day in ["월", "화", "수", "목", "금", "토", "일"]]))
 
