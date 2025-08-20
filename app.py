@@ -25,16 +25,22 @@ df = load_data()
 # -------------------------
 # 🎨 계절별 배경 이미지 설정
 # -------------------------
-def get_background_image(month):
-    if month in [12, 1, 2]:
-        return "https://images.unsplash.com/photo-1608889175123-7b2c1f6a5c51"  # 겨울
-    elif month in [3, 4, 5]:
-        return "https://images.unsplash.com/photo-1529070538774-1843cb3265df"  # 봄
-    elif month in [6, 7, 8]:
-        return "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"  # 여름
-    else:
-        return "https://images.unsplash.com/photo-1501973801540-537f08ccae7b"  # 가을
+def get_background_image(month: int) -> str:
+    season_images = {
+        "winter": "https://images.unsplash.com/photo-1482192596544-9eb780fc7f66?auto=format&fit=crop&w=1200&q=80",  # 겨울 설경
+        "spring": "https://images.unsplash.com/photo-1528137876914-0c9f3a492a96?auto=format&fit=crop&w=1200&q=80",  # 봄 꽃
+        "summer": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",  # 여름 바다
+        "autumn": "https://images.unsplash.com/photo-1501973801540-537f08ccae7b?auto=format&fit=crop&w=1200&q=80",  # 가을 단풍
+    }
 
+    if month in [12, 1, 2]:
+        return season_images["winter"]
+    elif month in [3, 4, 5]:
+        return season_images["spring"]
+    elif month in [6, 7, 8]:
+        return season_images["summer"]
+    else:
+        return season_images["autumn"]
 month = st.sidebar.selectbox("월 선택", range(1, 13), index=datetime.now().month - 1)
 
 bg_url = get_background_image(month)
