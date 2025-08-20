@@ -124,7 +124,18 @@ if not festivals.empty:
     if selected_festival != "-- 선택 --":
         fest = festivals[festivals["축제명"] == selected_festival].iloc[0]
         st.write(f"📍 장소: {fest['개최장소']}")
-        st.wri기
+        st.write(f"🗓️ 기간: {fest['축제시작일자'].date()} ~ {fest['축제종료일자'].date()}")
+        st.write(f"ℹ️ 내용: {fest['축제내용'] if pd.notna(fest['축제내용']) else '내용 없음'}")
+        if pd.notna(fest['홈페이지주소']):
+            st.markdown(f"🔗 [홈페이지 바로가기]({fest['홈페이지주소']})")
+
+        # 즐겨찾기 버튼
+        if st.button("⭐ 즐겨찾기 추가"):
+            if selected_festival not in st.session_state.favorites:
+                st.session_state.favorites.append(selected_festival)
+                st.success(f"'{selected_festival}'이(가) 즐겨찾기에 추가되었습니다!")
+
+# 즐겨찾기 목록 표시
 if st.session_state.favorites:
     st.subheader("⭐ 나의 즐겨찾기 축제")
     for fav in st.session_state.favorites:
