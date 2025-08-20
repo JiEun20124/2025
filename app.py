@@ -27,10 +27,10 @@ df = load_data()
 # -------------------------
 def get_background_image(month: int) -> str:
     season_images = {
-        "winter": "https://images.unsplash.com/photo-1608889175123-7b2c1f6a5c51?auto=format&fit=crop&w=1200&q=80",  # 겨울 설경
-        "spring": "https://images.unsplash.com/photo-1495748196005-68f0b3e5a4d4?auto=format&fit=crop&w=1200&q=80",  # 봄 벚꽃
+        "winter": "https://images.unsplash.com/photo-1453306458620-5bbef13a5bca?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",  # 겨울 설경
+        "spring": "https://unsplash.com/photos/cherry-blossoms?auto=format&fit=crop&w=1200&q=80",  # 봄 벚꽃
         "summer": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",  # 여름 바다
-        "autumn": "https://images.unsplash.com/photo-1501973801540-537f08ccae7b?auto=format&fit=crop&w=1200&q=80",  # 가을 단풍
+        "autumn": "https://unsplash.com/s/photos/autumn-wallpaper?auto=format&fit=crop&w=1200&q=80",  # 가을 단풍
     }
 
     if month in [12, 1, 2]:
